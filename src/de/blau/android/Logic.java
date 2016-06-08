@@ -2032,9 +2032,16 @@ public class Logic {
 				int result = 0;
 				try {
 					Server server = prefs.getServer();
-					server.getCapabilities();
-					if (!(server.apiAvailable() && server.readableDB())) {
-						return ErrorCodes.API_OFFLINE;
+					if (server.hasReadOnly()) {
+						server.getReadOnlyCapabilities();
+						if (!(server.readOnlyApiAvailable() && server.readOnlyReadableDB())) {
+							return ErrorCodes.API_OFFLINE;
+						}
+					} else {
+						server.getCapabilities();
+						if (!(server.apiAvailable() && server.readableDB())) {
+							return ErrorCodes.API_OFFLINE;
+						}
 					}
 					final OsmParser osmParser = new OsmParser();
 					final InputStream in = prefs.getServer().getStreamForBox(mapBox);
